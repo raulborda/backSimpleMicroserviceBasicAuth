@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejecutar Endpoint con Auth Basic</title>
+    <!-- Agregar Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-200 h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded shadow-md max-w-md">
+        <div id="result" class="mb-4"></div>
+        <button id="executeButton" class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Ejecutar Endpoint</button>
+    </div>
+
+    <script>
+        document.getElementById('executeButton').addEventListener('click', function() {
+            // Credenciales para autenticación básica
+            const username = 'raul';
+            const password = '1234';
+
+            // Codificar credenciales en Base64
+            const credentials = btoa(`${username}:${password}`);
+
+            fetch('http://localhost:3000/sum', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Basic ${credentials}`
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Si la respuesta es OK, convertir a JSON
+                } else {
+                    throw new Error('Error en la solicitud');
+                }
+            })
+            .then(data => {
+                // Mostrar el resultado obtenido del endpoint
+                document.getElementById('result').innerText = `Resultado: ${data.suma}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = 'Error al ejecutar el endpoint';
+            });
+        });
+    </script>
+</body>
+</html>
