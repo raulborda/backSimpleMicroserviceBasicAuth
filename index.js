@@ -1,33 +1,37 @@
 const express = require('express');
 const axios = require('axios');
-const basicAuth = require('basic-auth');
 require('dotenv').config();
-const cors = require('cors');
-
 
 const app = express();
 const PORT = process.env.PORT;
-app.use(cors());
-app.use(express.json());
+const PORT2 = process.env.PORT2;
 
-//Función para authBasic
 const auth = (req, res, next) => {
-  const credentials = basicAuth(req);
-  if (!credentials || credentials.name !== 'raul' || credentials.pass !== '1234') {
-    res.status(401).send('No autorizado');
-  } else {
-    next();
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Basic ')) {
+    const message = 'No autorizado';
+    res.status(401).json({message});
+    return;
   }
+
+  const base64Credentials = authHeader.split(' ')[1];
+  const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+  const [username, password] = credentials.split(':');
+
+  if (username !== 'raul' || password !== '1234') {
+    res.status(401).send('No autorizado');
+    return;
+  }
+
+  next();
 };
 
-//llama al endpoint con un parámetro mas de auth
 app.get('/sum', auth, async (req, res) => {
   try {
-
-    const { data: { num1, num2 } } = await axios.get('http://localhost:6001/random');
+    const { data: { num1, num2 } } = await axios.get(`http://localhost:${PORT2}/random`);
     const suma = num1 + num2;
     res.json({ suma });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al sumar los números' });
