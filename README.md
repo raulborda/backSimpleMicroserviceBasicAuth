@@ -29,6 +29,7 @@ Este proyecto es un servicio API REST simple que realiza la suma de dos números
 3. Crear un archivo `.env` en la raíz del proyecto con el siguiente contenido:
    ```
    PORT=3000
+   PORT2=3002
    ```
 
 ## Dependencias
